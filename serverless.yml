@@ -1,0 +1,100 @@
+service: sls-data-pipelines-batch-processing
+
+package:
+  individually: true
+
+plugins:
+  #- serverless-iam-roles-per-function
+  #- serverless-python-requirements
+  #- serverless-pseudo-parameters
+  - serverless-step-functions
+
+
+custom:
+  lumigo:
+    token: ${ssm:/lumigo/token}
+  S3Prefix: 'destination-parquet/'
+  S3BatchResultsPrefix: 'transformed-parquet-athena/'
+  stage: "${opt:stage, self:provider.stage}"
+
+provider:
+  name: aws
+  stage: dev
+  runtime: python3.7
+  region: eu-west-1
+  profile: default
+  httpApi:
+    cors:
+      allowedOrigins:
+        - '*'
+      allowedMethods:
+        - GET
+        - OPTIONS
+  reservedConcurrency: 1
+  memorySize: 512
+  versionFunctions: false
+  timeout: 30
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "logs:CreateLogGroup"
+        - "logs:CreateLogStream"
+        - "logs:PutLogEvents"
+      Resource: '*'
+  environment:
+    LUMIGO_TRACER_TOKEN: ${ssm:/lumigo/token}
+    LUMIGO_ORIGINAL_HANDLER: handler.handle
+
+functions:
+  RunDataCrawler:
+    handler: src/RunDataCrawler/handler.handle
+#    handler: /opt/python/lumigo_tracer._handler
+#    module: src/RunDataCrawler
+    timeout: 60
+#    layers:
+#      - arn:aws:lambda:eu-west-1:114300393969:layer:lumigo-python-tracer:115
+    environment:
+      CRAWLER_NAME: 'sls-data-pipelines-batch-parquet'
+
+#  TransformTrafficToJsonData:
+#    handler: /opt/python/lumigo_tracer._handler
+#    module: src/TransformTrafficDataToJson
+#    layers:
+#      - arn:aws:lambda:eu-west-1:114300393969:layer:lumigo-python-tracer:115
+#    environment:
+#      BUCKET_NAME:
+#        Ref: OriginBucket
+#      S3_XML_PREFIX: "xml/input/"
+#      S3_JSON_PREFIX: "json/input/"
+#    iamRoleStatementsInherit: true
+#    iamRoleStatements:
+#      - Effect: "Allow"
+#        Action:
+#          - s3:GetObject
+#          - s3:PutObject
+#        Resource:
+#          Fn::Join:
+#            - ""
+#            - - "arn:aws:s3:::"
+#              - Ref: "OriginBucket"
+#              - "/*"
+#    events:
+#      - s3:
+#          bucket:
+#            Ref: OriginBucket
+#          event: s3:ObjectCreated:*
+#          rules:
+#            - prefix: xml/input/
+#            - suffix: .xml
+#          existing: true
+
+stepFunctions:
+  stateMachines:
+      - ${file(resources/sm.yml)}
+
+#resources:
+#  - Outputs:
+#      TrafficEventsDeliveryBucket:
+#        Description: "Bucket containing all events for all locations"
+#        Value:
+#          Fn::ImportValue: "sls-data-pipelines-dev-TrafficEventsDeliveryBucketName"

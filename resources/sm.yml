@@ -1,0 +1,14 @@
+BatchProcessingStateMachine:
+  name: BatchProcessingStateMachine
+  definition:
+    Comment: "State machine for the batch processing pipeline"
+    StartAt: RunDataCrawler
+  States:
+    RunDataCrawler:
+      Type: Task
+      Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-RunDataCrawler
+      Next: Wait
+    Wait:
+      Type: Wait
+      Seconds: 30
+      End: true

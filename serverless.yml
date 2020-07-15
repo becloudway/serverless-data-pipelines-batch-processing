@@ -4,11 +4,8 @@ package:
   individually: true
 
 plugins:
-  #- serverless-iam-roles-per-function
-  #- serverless-python-requirements
-  #- serverless-pseudo-parameters
+  - serverless-python-requirements
   - serverless-step-functions
-
 
 custom:
   lumigo:

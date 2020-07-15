@@ -3,64 +3,64 @@ BatchProcessingStateMachine:
   definition:
     Comment: "State machine for the batch processing pipeline"
     StartAt: RunDataCrawler
-  States:
-    RunDataCrawler:
-      Type: Task
-      Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-RunDataCrawler
-      Next: Wait
-    WaitCrawler:
-      Type: Wait
-      Seconds: 30
-      Next: GetCrawlerState
-    GetCrawlerState:
-      Type: Task
-      Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-GetCrawlerState
-      Next: CheckCrawlerState
-    CheckCrawlerState:
-      Type: Choice
-      Default: WaitCrawler
-      Choices:
-        - And:
-          - Variable: '$.State'
-            StringEquals: READY
-          - Variable: '$.Status'
-            StringEquals: SUCCESS
-          Next: RunETLInsertAthena
-        - And:
-          - Variable: '$.State'
-            StringEquals: READY
-          - Variable: '$.Status'
+    States:
+      RunDataCrawler:
+        Type: Task
+        Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-RunDataCrawler
+        Next: Wait
+      WaitCrawler:
+        Type: Wait
+        Seconds: 30
+        Next: GetCrawlerState
+      GetCrawlerState:
+        Type: Task
+        Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-GetCrawlerState
+        Next: CheckCrawlerState
+      CheckCrawlerState:
+        Type: Choice
+        Default: WaitCrawler
+        Choices:
+          - And:
+            - Variable: '$.State'
+              StringEquals: READY
+            - Variable: '$.Status'
+              StringEquals: SUCCESS
+            Next: RunETLInsertAthena
+          - And:
+            - Variable: '$.State'
+              StringEquals: READY
+            - Variable: '$.Status'
+              StringEquals: FAILED
+            Next: CrawlerFailed
+      CrawlerFailed:
+        Type: Fail
+        Cause: "Crawler run has failed"
+        Error: "Crawler run has failed"
+      RunETLInsertAthena:
+        Type: Task
+        Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-RunETLInsertAthena
+        Next: WaitAthena
+      WaitAthena:
+        Type: Wait
+        Seconds: 30
+        Next: GetAthenaState
+      GetAthenaState:
+        Type: Task
+        Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-GetAthenaState
+        Next: CheckAthenaState
+      CheckAthenaState:
+        Type: Choice
+        Default: WaitAthena
+        Choices:
+          - Variable: '$.AthenaState'
+            StringEquals: SUCCEEDED
+            Next: SuccessEndState
+          - Variable: '$.AthenaState'
             StringEquals: FAILED
-          Next: CrawlerFailed
-    CrawlerFailed:
-      Type: Fail
-      Cause: "Crawler run has failed"
-      Error: "Crawler run has failed"
-    RunETLInsertAthena:
-      Type: Task
-      Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-RunETLInsertAthena
-      Next: WaitAthena
-    WaitAthena:
-      Type: Wait
-      Seconds: 30
-      Next: GetAthenaState
-    GetAthenaState:
-      Type: Task
-      Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-GetAthenaState
-      Next: CheckAthenaState
-    CheckAthenaState:
-      Type: Choice
-      Default: WaitAthena
-      Choices:
-        - Variable: '$.AthenaState'
-          StringEquals: SUCCEEDED
-          Next: SuccessEndState
-        - Variable: '$.AthenaState'
-          StringEquals: FAILED
-          Next: AthenaFailed
-    AthenaFailed:
-      Type: Fail
-      Cause: "Athena ETL insert query has failed"
-      Error: "Athena ETL insert query has failed"
-    SuccessEndState:
-      Type: Succeed
+            Next: AthenaFailed
+      AthenaFailed:
+        Type: Fail
+        Cause: "Athena ETL insert query has failed"
+        Error: "Athena ETL insert query has failed"
+      SuccessEndState:
+        Type: Succeed

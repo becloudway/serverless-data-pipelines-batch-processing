@@ -52,8 +52,8 @@ functions:
     handler: /opt/python/lumigo_tracer._handler
     module: src/RunDataCrawler
     timeout: 30
-#    layers:
-#      - arn:aws:lambda:eu-west-1:114300393969:layer:lumigo-python-tracer:115
+    layers:
+      - arn:aws:lambda:eu-west-1:114300393969:layer:lumigo-python-tracer:115
     environment:
       CRAWLER_NAME: ${self:custom.CrawlerName}
 
@@ -75,8 +75,7 @@ functions:
     layers:
       - arn:aws:lambda:eu-west-1:114300393969:layer:lumigo-python-tracer:115
     environment:
-      QUERY:
-        - ${file(queries/InsertETL.sql)}
+      QUERY: ${file(queries/InsertETL.sql)}
       DB: 'anpr'
       CATALOG: 'AwsDataCatalog'
       WORKGROUP: 'primary'
@@ -123,8 +122,7 @@ functions:
 #          existing: true
 
 stepFunctions:
-  stateMachines:
-      - ${file(resources/sm.yml)}
+  stateMachines: ${file(resources/sm.yml)}
 
 #resources:
 #  - Outputs:

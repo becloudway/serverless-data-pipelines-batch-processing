@@ -1,0 +1,10 @@
+{
+  "name": "sls-data-pipelines-batch-processing",
+  "description": "",
+  "version": "0.1.0",
+  "dependencies": {},
+  "devDependencies": {
+    "serverless-python-requirements": "^5.1.0",
+    "serverless-step-functions": "^2.21.1"
+  }
+}

@@ -16,6 +16,7 @@ custom:
   S3Prefix: 'destination-parquet/'
   S3BatchResultsPrefix: 'transformed-parquet-athena/'
   stage: "${opt:stage, self:provider.stage}"
+  CrawlerName: 'sls-data-pipelines-batch-parquet'
 
 provider:
   name: aws
@@ -50,11 +51,28 @@ functions:
     handler: src/RunDataCrawler/handler.handle
 #    handler: /opt/python/lumigo_tracer._handler
 #    module: src/RunDataCrawler
-    timeout: 60
+    timeout: 30
 #    layers:
 #      - arn:aws:lambda:eu-west-1:114300393969:layer:lumigo-python-tracer:115
     environment:
-      CRAWLER_NAME: 'sls-data-pipelines-batch-parquet'
+      CRAWLER_NAME: ${self:custom.CrawlerName}
+
+  CheckCrawlerStatus:
+    handler: src/CheckCrawlerStatus/handler.handle
+    timeout: 30
+    environment:
+      CRAWLER_NAME: ${self:custom.CrawlerName}
+
+  RunETLInsertAthena:
+    handler: src/RunETLInsertAthena/handler.handle
+    timeout: 30
+    environment:
+      QUERY:
+        - ${file(queries/InsertETL.sql)}
+      DB: 'anpr'
+      CATALOG: 'AwsDataCatalog'
+      WORKGROUP: 'primary'
+      OUTPUT: 's3://sls-data-pipelines-dev-deliverybucket-1ct0hgst9xpby/transformed-parquet-athena/temp'
 
 #  TransformTrafficToJsonData:
 #    handler: /opt/python/lumigo_tracer._handler

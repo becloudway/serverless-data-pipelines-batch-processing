@@ -8,7 +8,35 @@ BatchProcessingStateMachine:
       Type: Task
       Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-RunDataCrawler
       Next: Wait
-    Wait:
+    WaitCrawler:
       Type: Wait
       Seconds: 30
-      End: true
+      Next: CheckCrawlerStatus
+    CheckCrawlerState:
+      Type: Choice
+      Default: WaitCrawler
+      Choices:
+        - And:
+          - Variable: '$.State'
+            StringEquals: READY
+          - Variable: '$.Status'
+            StringEquals: SUCCESS
+          Next: RunETLInsertAthena
+        - And:
+          - Variable: '$.State'
+            StringEquals: READY
+          - Variable: '$.Status'
+            StringEquals: FAILED
+          Next: CrawlerFailed
+    CrawlerFailed:
+      Type: Fail
+      Cause: "Crawler run has failed"
+      Error: "Crawler run has failed"
+#    RunETLInsertAthena:
+#      Type: Task
+#      Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-RunETLInsertAthena
+#      Next: WaitAthena
+#    WaitAthena:
+#      Type: Wait
+#      Seconds: 30
+#      Next: CheckAthenaStatus

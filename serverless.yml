@@ -48,9 +48,9 @@ provider:
 
 functions:
   RunDataCrawler:
-    handler: src/RunDataCrawler/handler.handle
-#    handler: /opt/python/lumigo_tracer._handler
-#    module: src/RunDataCrawler
+#    handler: src/RunDataCrawler/handler.handle
+    handler: /opt/python/lumigo_tracer._handler
+    module: src/RunDataCrawler
     timeout: 30
 #    layers:
 #      - arn:aws:lambda:eu-west-1:114300393969:layer:lumigo-python-tracer:115
@@ -58,22 +58,22 @@ functions:
       CRAWLER_NAME: ${self:custom.CrawlerName}
 
   GetCrawlerState:
-    handler: src/GetCrawlerState/handler.handle
-#    handler: /opt/python/lumigo_tracer._handler
-#    module: src/RunDataCrawler
+#    handler: src/GetCrawlerState/handler.handle
+    handler: /opt/python/lumigo_tracer._handler
+    module: src/GetCrawlerState
     timeout: 30
-#    layers:
-#      - arn:aws:lambda:eu-west-1:114300393969:layer:lumigo-python-tracer:115
+    layers:
+      - arn:aws:lambda:eu-west-1:114300393969:layer:lumigo-python-tracer:115
     environment:
       CRAWLER_NAME: ${self:custom.CrawlerName}
 
   RunETLInsertAthena:
-    handler: src/RunETLInsertAthena/handler.handle
-#    handler: /opt/python/lumigo_tracer._handler
-#    module: src/RunDataCrawler
+#    handler: src/RunETLInsertAthena/handler.handle
+    handler: /opt/python/lumigo_tracer._handler
+    module: src/RunETLInsertAthena
     timeout: 30
-#    layers:
-#      - arn:aws:lambda:eu-west-1:114300393969:layer:lumigo-python-tracer:115
+    layers:
+      - arn:aws:lambda:eu-west-1:114300393969:layer:lumigo-python-tracer:115
     environment:
       QUERY:
         - ${file(queries/InsertETL.sql)}
@@ -81,6 +81,14 @@ functions:
       CATALOG: 'AwsDataCatalog'
       WORKGROUP: 'primary'
       OUTPUT: 's3://sls-data-pipelines-dev-deliverybucket-1ct0hgst9xpby/transformed-parquet-athena/temp'
+
+  GetAthenaState:
+#    handler: src/GetAthenaState/handler.handle
+    handler: /opt/python/lumigo_tracer._handler
+    module: src/GetAthenaState
+    timeout: 30
+    layers:
+      - arn:aws:lambda:eu-west-1:114300393969:layer:lumigo-python-tracer:115
 
 #  TransformTrafficToJsonData:
 #    handler: /opt/python/lumigo_tracer._handler

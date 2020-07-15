@@ -42,6 +42,11 @@ provider:
         - "logs:CreateLogStream"
         - "logs:PutLogEvents"
       Resource: '*'
+    - Effect: "Allow"
+      Action:
+        - "states:ListStateMachines"
+        - "states:StartExecution"
+      Resource: "arn:aws:states:*:*:*"
   environment:
     LUMIGO_TRACER_TOKEN: ${ssm:/lumigo/token}
     LUMIGO_ORIGINAL_HANDLER: handler.handle

@@ -11,7 +11,11 @@ BatchProcessingStateMachine:
     WaitCrawler:
       Type: Wait
       Seconds: 30
-      Next: CheckCrawlerStatus
+      Next: GetCrawlerState
+    GetCrawlerState:
+      Type: Task
+      Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-GetCrawlerState
+      Next: CheckCrawlerState
     CheckCrawlerState:
       Type: Choice
       Default: WaitCrawler
@@ -39,4 +43,24 @@ BatchProcessingStateMachine:
     WaitAthena:
       Type: Wait
       Seconds: 30
-      Next: CheckAthenaStatus
+      Next: GetAthenaState
+    GetAthenaState:
+      Type: Task
+      Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-GetAthenaState
+      Next: CheckAthenaState
+    CheckAthenaState:
+      Type: Choice
+      Default: WaitAthena
+      Choices:
+        - Variable: '$.AthenaState'
+          StringEquals: SUCCEEDED
+          Next: SuccessEndState
+        - Variable: '$.AthenaState'
+          StringEquals: FAILED
+          Next: AthenaFailed
+    AthenaFailed:
+      Type: Fail
+      Cause: "Athena ETL insert query has failed"
+      Error: "Athena ETL insert query has failed"
+    SuccessEndState:
+      Type: Succeed

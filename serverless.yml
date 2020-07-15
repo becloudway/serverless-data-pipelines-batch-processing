@@ -57,8 +57,8 @@ functions:
     environment:
       CRAWLER_NAME: ${self:custom.CrawlerName}
 
-  CheckCrawlerStatus:
-    handler: src/CheckCrawlerStatus/handler.handle
+  GetCrawlerState:
+    handler: src/GetCrawlerState/handler.handle
 #    handler: /opt/python/lumigo_tracer._handler
 #    module: src/RunDataCrawler
     timeout: 30

@@ -59,13 +59,21 @@ functions:
 
   CheckCrawlerStatus:
     handler: src/CheckCrawlerStatus/handler.handle
+#    handler: /opt/python/lumigo_tracer._handler
+#    module: src/RunDataCrawler
     timeout: 30
+#    layers:
+#      - arn:aws:lambda:eu-west-1:114300393969:layer:lumigo-python-tracer:115
     environment:
       CRAWLER_NAME: ${self:custom.CrawlerName}
 
   RunETLInsertAthena:
     handler: src/RunETLInsertAthena/handler.handle
+#    handler: /opt/python/lumigo_tracer._handler
+#    module: src/RunDataCrawler
     timeout: 30
+#    layers:
+#      - arn:aws:lambda:eu-west-1:114300393969:layer:lumigo-python-tracer:115
     environment:
       QUERY:
         - ${file(queries/InsertETL.sql)}

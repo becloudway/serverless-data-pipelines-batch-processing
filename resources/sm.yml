@@ -32,11 +32,11 @@ BatchProcessingStateMachine:
       Type: Fail
       Cause: "Crawler run has failed"
       Error: "Crawler run has failed"
-#    RunETLInsertAthena:
-#      Type: Task
-#      Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-RunETLInsertAthena
-#      Next: WaitAthena
-#    WaitAthena:
-#      Type: Wait
-#      Seconds: 30
-#      Next: CheckAthenaStatus
+    RunETLInsertAthena:
+      Type: Task
+      Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-RunETLInsertAthena
+      Next: WaitAthena
+    WaitAthena:
+      Type: Wait
+      Seconds: 30
+      Next: CheckAthenaStatus

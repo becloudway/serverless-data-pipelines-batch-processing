@@ -21,15 +21,15 @@ BatchProcessingStateMachine:
         Default: WaitCrawler
         Choices:
           - And:
-            - Variable: '$.State'
+            - Variable: '$.CrawlerState'
               StringEquals: READY
-            - Variable: '$.Status'
+            - Variable: '$.CrawlerStatus'
               StringEquals: SUCCESS
             Next: RunETLInsertAthena
           - And:
-            - Variable: '$.State'
+            - Variable: '$.CrawlerState'
               StringEquals: READY
-            - Variable: '$.Status'
+            - Variable: '$.CrawlerStatus'
               StringEquals: FAILED
             Next: CrawlerFailed
       CrawlerFailed:

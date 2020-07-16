@@ -24,7 +24,7 @@ BatchProcessingStateMachine:
             - Variable: '$.CrawlerState'
               StringEquals: READY
             - Variable: '$.CrawlerStatus'
-              StringEquals: SUCCESS
+              StringEquals: SUCCEEDED
             Next: RunETLInsertAthena
           - And:
             - Variable: '$.CrawlerState'

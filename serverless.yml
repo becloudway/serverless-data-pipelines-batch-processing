@@ -109,6 +109,15 @@ functions:
             - ""
             - - "arn:aws:athena:*:*:workgroup/"
               - ${self:custom.AthenaWorkGroup}
+      - Effect: "Allow"
+        Action:
+          - s3:*
+        Resource: "*"
+#          Fn::Join:
+#            - ""
+#            - - "arn:aws:s3:::"
+#              - !ImportValue sls-data-pipelines-dev-TrafficEventsDeliveryBucketName
+#              - "/*"
 
   GetAthenaState:
 #    handler: src/GetAthenaState/handler.handle

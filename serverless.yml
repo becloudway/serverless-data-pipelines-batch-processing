@@ -57,7 +57,7 @@ functions:
     module: src/RunDataCrawler
     timeout: 30
     layers:
-      - arn:aws:lambda:eu-west-1:114300393969:layer:lumigo-python-tracer:115
+      - arn:aws:lambda:eu-west-1:114300393969:layer:lumigo-python-tracer:134
     environment:
       CRAWLER_NAME: ${self:custom.CrawlerName}
     iamRoleStatementsName: sls-batch-${opt:stage, self:provider.stage}-RunDataCrawler-lambdaRole
@@ -74,7 +74,7 @@ functions:
     module: src/GetCrawlerState
     timeout: 30
     layers:
-      - arn:aws:lambda:eu-west-1:114300393969:layer:lumigo-python-tracer:115
+      - arn:aws:lambda:eu-west-1:114300393969:layer:lumigo-python-tracer:134
     environment:
       CRAWLER_NAME: ${self:custom.CrawlerName}
     iamRoleStatementsName: sls-batch-${opt:stage, self:provider.stage}-GetCrawlerState-lambdaRole
@@ -91,7 +91,7 @@ functions:
     module: src/RunETLInsertAthena
     timeout: 30
     layers:
-      - arn:aws:lambda:eu-west-1:114300393969:layer:lumigo-python-tracer:115
+      - arn:aws:lambda:eu-west-1:114300393969:layer:lumigo-python-tracer:134
     environment:
       QUERY: ${file(queries/InsertETL.sql)}
       DB: 'anpr'
@@ -116,7 +116,7 @@ functions:
     module: src/GetAthenaState
     timeout: 30
     layers:
-      - arn:aws:lambda:eu-west-1:114300393969:layer:lumigo-python-tracer:115
+      - arn:aws:lambda:eu-west-1:114300393969:layer:lumigo-python-tracer:134
     iamRoleStatementsName: sls-batch-${opt:stage, self:provider.stage}-GetAthenaState-lambdaRole
     iamRoleStatementsInherit: true
     iamRoleStatements:
@@ -128,38 +128,6 @@ functions:
             - ""
             - - "arn:aws:athena:*:*:workgroup/"
               - ${self:custom.AthenaWorkGroup}
-
-#  TransformTrafficToJsonData:
-#    handler: /opt/python/lumigo_tracer._handler
-#    module: src/TransformTrafficDataToJson
-#    layers:
-#      - arn:aws:lambda:eu-west-1:114300393969:layer:lumigo-python-tracer:115
-#    environment:
-#      BUCKET_NAME:
-#        Ref: OriginBucket
-#      S3_XML_PREFIX: "xml/input/"
-#      S3_JSON_PREFIX: "json/input/"
-#    iamRoleStatementsInherit: true
-#    iamRoleStatements:
-#      - Effect: "Allow"
-#        Action:
-#          - s3:GetObject
-#          - s3:PutObject
-#        Resource:
-#          Fn::Join:
-#            - ""
-#            - - "arn:aws:s3:::"
-#              - Ref: "OriginBucket"
-#              - "/*"
-#    events:
-#      - s3:
-#          bucket:
-#            Ref: OriginBucket
-#          event: s3:ObjectCreated:*
-#          rules:
-#            - prefix: xml/input/
-#            - suffix: .xml
-#          existing: true
 
 stepFunctions:
   stateMachines: ${file(resources/sm.yml)}

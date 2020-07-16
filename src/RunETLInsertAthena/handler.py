@@ -77,4 +77,4 @@ def handle(event, context):
             execution_ids.append(response)
         except Exception as e:
             return {'Response': 'FAILED', 'Error': str(e)}
-    return {'Response': 'SUCCEEDED', 'ExecutionIds': execution_ids}
+    return {'Response': 'SUCCEEDED', 'QueryExecutionIds': execution_ids}

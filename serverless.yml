@@ -4,6 +4,7 @@ package:
   individually: true
 
 plugins:
+  - serverless-iam-roles-per-function
   - serverless-python-requirements
   - serverless-step-functions
 
@@ -14,6 +15,7 @@ custom:
   S3BatchResultsPrefix: 'transformed-parquet-athena/'
   stage: "${opt:stage, self:provider.stage}"
   CrawlerName: 'sls-data-pipelines-batch-parquet'
+  AthenaWorkGroup: 'primary'
 
 provider:
   name: aws
@@ -58,6 +60,17 @@ functions:
       - arn:aws:lambda:eu-west-1:114300393969:layer:lumigo-python-tracer:115
     environment:
       CRAWLER_NAME: ${self:custom.CrawlerName}
+    iamRoleStatementsName: sls-batch-${opt:stage, self:provider.stage}-RunDataCrawler-lambdaRole
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - glue:StartCrawler
+        Resource:
+          Fn::Join:
+            - ""
+            - - "arn:aws:glue:*:*:crawler/"
+              - ${self:custom.CrawlerName}
 
   GetCrawlerState:
 #    handler: src/GetCrawlerState/handler.handle
@@ -68,6 +81,17 @@ functions:
       - arn:aws:lambda:eu-west-1:114300393969:layer:lumigo-python-tracer:115
     environment:
       CRAWLER_NAME: ${self:custom.CrawlerName}
+    iamRoleStatementsName: sls-batch-${opt:stage, self:provider.stage}-GetCrawlerState-lambdaRole
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - glue:GetCrawler
+        Resource:
+          Fn::Join:
+            - ""
+            - - "arn:aws:glue:*:*:crawler/"
+              - ${self:custom.CrawlerName}
 
   RunETLInsertAthena:
 #    handler: src/RunETLInsertAthena/handler.handle
@@ -80,8 +104,19 @@ functions:
       QUERY: ${file(queries/InsertETL.sql)}
       DB: 'anpr'
       CATALOG: 'AwsDataCatalog'
-      WORKGROUP: 'primary'
+      WORKGROUP: ${self:custom.AthenaWorkGroup}
       OUTPUT: 's3://sls-data-pipelines-dev-deliverybucket-1ct0hgst9xpby/transformed-parquet-athena/temp'
+    iamRoleStatementsName: sls-batch-${opt:stage, self:provider.stage}-RunETLInsertAthena-lambdaRole
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - athena:StartQueryExecution
+        Resource:
+          Fn::Join:
+            - ""
+            - - "arn:aws:athena:*:*:workgroup/"
+              - ${self:custom.AthenaWorkGroup}
 
   GetAthenaState:
 #    handler: src/GetAthenaState/handler.handle
@@ -90,6 +125,17 @@ functions:
     timeout: 30
     layers:
       - arn:aws:lambda:eu-west-1:114300393969:layer:lumigo-python-tracer:115
+    iamRoleStatementsName: sls-batch-${opt:stage, self:provider.stage}-GetAthenaState-lambdaRole
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - athena:GetQueryExecution
+        Resource:
+          Fn::Join:
+            - ""
+            - - "arn:aws:athena:*:*:workgroup/"
+              - ${self:custom.AthenaWorkGroup}
 
 #  TransformTrafficToJsonData:
 #    handler: /opt/python/lumigo_tracer._handler

@@ -66,11 +66,7 @@ functions:
       - Effect: "Allow"
         Action:
           - glue:StartCrawler
-        Resource:
-          Fn::Join:
-            - ""
-            - - "arn:aws:glue:*:*:crawler/"
-              - ${self:custom.CrawlerName}
+        Resource: "*"
 
   GetCrawlerState:
 #    handler: src/GetCrawlerState/handler.handle
@@ -87,11 +83,7 @@ functions:
       - Effect: "Allow"
         Action:
           - glue:GetCrawler
-        Resource:
-          Fn::Join:
-            - ""
-            - - "arn:aws:glue:*:*:crawler/"
-              - ${self:custom.CrawlerName}
+        Resource: "*"
 
   RunETLInsertAthena:
 #    handler: src/RunETLInsertAthena/handler.handle

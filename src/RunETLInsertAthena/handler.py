@@ -10,8 +10,9 @@ OUTPUT = os.environ['OUTPUT']
 
 
 def handle(event, context):
+    finished_query = QUERY.format(year=event['year'], month=event['month'], day=event['day'])
     response = athena_client.start_query_execution(
-        QueryString=QUERY,
+        QueryString=finished_query,
         QueryExecutionContext={'Database': DB, 'Catalog': CATALOG},
         ResultConfiguration={'OutputLocation': OUTPUT}
     )

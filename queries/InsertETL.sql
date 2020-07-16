@@ -21,6 +21,5 @@ tijd_waarneming as recordTimestamp,
 voertuigsnelheid_rekenkundig_klasse2 as currentSpeed,
 rekendata_bezettingsgraad as bezettingsgraad FROM
 "anpr"."sls_data_pipelines_batch_parquet_destination_parquet")
-WHERE day(originalTimestamp) = 7 AND bezettingsgraad > -1 AND uniqueId IN (32, 37, 1840, 2125, 3388, 3391, 753, 1065, 3159, 2161, 216, 1132
-)
+WHERE year(originalTimestamp)={year} AND month(originalTimestamp)={month} AND day(originalTimestamp)={day} AND bezettingsgraad > -1 AND uniqueId IN (32, 37, 1840, 2125, 3388, 3391, 753, 1065, 3159, 2161, 216, 1132)
 )

@@ -4,6 +4,7 @@ package:
   individually: true
 
 plugins:
+  - serverless-pseudo-parameters
   - serverless-iam-roles-per-function
   - serverless-python-requirements
   - serverless-step-functions
@@ -16,6 +17,9 @@ custom:
   stage: "${opt:stage, self:provider.stage}"
   CrawlerName: 'sls-data-pipelines-batch-parquet'
   AthenaWorkGroup: 'primary'
+  Database: 'anpr'
+  DataCatalog: 'AwsDataCatalog'
+  Table: 'sls_data_pipelines_batch_transformed_parquet_athena'
 
 provider:
   name: aws
@@ -44,8 +48,11 @@ provider:
     - Effect: "Allow"
       Action:
         - "states:ListStateMachines"
+      Resource: "*"
+    - Effect: "Allow"
+      Action:
         - "states:StartExecution"
-      Resource: "arn:aws:states:*:*:*"
+      Resource: "arn:aws:states:#{AWS::Region}:#{AWS::AccountId}:BatchProcessingStateMachine"
   environment:
     LUMIGO_TRACER_TOKEN: ${ssm:/lumigo/token}
     LUMIGO_ORIGINAL_HANDLER: handler.handle
@@ -94,8 +101,8 @@ functions:
       - arn:aws:lambda:eu-west-1:114300393969:layer:lumigo-python-tracer:134
     environment:
       QUERY: ${file(queries/InsertETL.sql)}
-      DB: 'anpr'
-      CATALOG: 'AwsDataCatalog'
+      DB: ${self:custom.Database}
+      CATALOG: ${self:custom.DataCatalog}
       WORKGROUP: ${self:custom.AthenaWorkGroup}
       OUTPUT: 's3://sls-data-pipelines-dev-deliverybucket-1ct0hgst9xpby/transformed-parquet-athena/temp'
     iamRoleStatementsName: sls-batch-${opt:stage, self:provider.stage}-RunETLInsertAthena-lambdaRole
@@ -118,19 +125,53 @@ functions:
           - s3:ListMultipartUploadParts
           - s3:AbortMultipartUpload
           - s3:PutObject
-        Resource: "*"
-      - Effect: "Allow"
-        Action:
-          - glue:GetPartition
-          - glue:GetPartitions
-          - glue:GetTable
-          - glue:UpdateTable
-        Resource: "*"
-#          Fn::Join:
-#            - ""
-#            - - "arn:aws:s3:::"
-#              - !ImportValue sls-data-pipelines-dev-TrafficEventsDeliveryBucketName
-#              - "/*"
+        Resource:
+          - Fn::Join:
+              - ""
+              - - "arn:aws:s3:::"
+                - !ImportValue sls-data-pipelines-dev-TrafficEventsDeliveryBucketName
+          - Fn::Join:
+            - ""
+            - - "arn:aws:s3:::"
+              - !ImportValue sls-data-pipelines-dev-TrafficEventsDeliveryBucketName
+              - "/*"
+        - Effect: "Allow"
+          Action:
+            - glue:GetTable
+            - glue:UpdateTable
+            - glue:GetPartition
+            - glue:GetPartitions
+          Resource: "*"
+#      - Effect: "Allow"
+#        Action:
+#          - glue:GetTable
+#          -
+#        Resource:
+#          - Fn::Join:
+#              - ""
+#              - - "arn:aws:glue:#{AWS::Region}:#{AWS::AccountId}:table/"
+#                - ${self:custom.DataCatalog}
+#                - "/"
+#                - ${self:custom.Database}
+#                - "/"
+#                - ${self:custom.Table}
+#
+#      - Effect: "Allow"
+#        Action:
+#          - glue:UpdateTable
+#          - glue:GetPartition
+#          - glue:GetPartitions
+##        Resource:
+##          - Fn::Join:
+##              - ""
+##              - - "arn:aws:glue:#{AWS::Region}:#{AWS::AccountId}:database/"
+##                - ${self:custom.Database}
+##          - Fn::Join:
+##              - ""
+##              - - "arn:aws:glue:#{AWS::Region}:#{AWS::AccountId}:table/"
+##                - ${self:custom.Database}
+##                - "/"
+##                - ${self:custom.Table}
 
   GetAthenaState:
 #    handler: src/GetAthenaState/handler.handle
@@ -148,7 +189,7 @@ functions:
         Resource:
           Fn::Join:
             - ""
-            - - "arn:aws:athena:*:*:workgroup/"
+            - - "arn:aws:athena:#{AWS::Region}:#{AWS::AccountId}:workgroup/"
               - ${self:custom.AthenaWorkGroup}
 
 stepFunctions:

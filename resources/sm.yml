@@ -1,4 +1,6 @@
 BatchProcessingStateMachine:
+  events:
+    - schedule: rate(1 day)
   name: BatchProcessingStateMachine
   definition:
     Comment: "State machine for the batch processing pipeline"

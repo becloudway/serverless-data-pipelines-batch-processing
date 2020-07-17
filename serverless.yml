@@ -111,7 +111,20 @@ functions:
               - ${self:custom.AthenaWorkGroup}
       - Effect: "Allow"
         Action:
-          - s3:*
+          - s3:GetBucketLocation
+          - s3:GetObject
+          - s3:ListBucket
+          - s3:ListBucketMultipartUploads
+          - s3:ListMultipartUploadParts
+          - s3:AbortMultipartUpload
+          - s3:PutObject
+        Resource: "*"
+      - Effect: "Allow"
+        Action:
+          - glue:GetPartition
+          - glue:GetPartitions
+          - glue:GetTable
+          - UpdateTable
         Resource: "*"
 #          Fn::Join:
 #            - ""

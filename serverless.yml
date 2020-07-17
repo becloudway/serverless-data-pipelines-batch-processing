@@ -124,7 +124,7 @@ functions:
           - glue:GetPartition
           - glue:GetPartitions
           - glue:GetTable
-          - UpdateTable
+          - glue:UpdateTable
         Resource: "*"
 #          Fn::Join:
 #            - ""

@@ -135,13 +135,13 @@ functions:
             - - "arn:aws:s3:::"
               - !ImportValue sls-data-pipelines-dev-TrafficEventsDeliveryBucketName
               - "/*"
-        - Effect: "Allow"
-          Action:
-            - glue:GetTable
-            - glue:UpdateTable
-            - glue:GetPartition
-            - glue:GetPartitions
-          Resource: "*"
+      - Effect: "Allow"
+        Action:
+          - glue:GetTable
+          - glue:UpdateTable
+          - glue:GetPartition
+          - glue:GetPartitions
+        Resource: "*"
 #      - Effect: "Allow"
 #        Action:
 #          - glue:GetTable

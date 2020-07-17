@@ -141,6 +141,7 @@ functions:
           - glue:UpdateTable
           - glue:GetPartition
           - glue:GetPartitions
+          - glue:BatchCreatePartition
         Resource: "*"
 #      - Effect: "Allow"
 #        Action:

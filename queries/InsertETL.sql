@@ -18,7 +18,7 @@ lag(currentSpeed, 1) OVER (PARTITION BY uniqueId ORDER BY originalTimestamp) as 
 SELECT unieke_id as uniqueId,
 from_unixtime(CAST(tijd_waarneming as INTEGER)) as originalTimestamp,
 tijd_waarneming as recordTimestamp,
-voertuigsnelheid_rekenkundig_klasse2 as currentSpeed,
+(voertuigsnelheid_rekenkundig_klasse2 + voertuigsnelheid_rekenkundig_klasse3 + voertuigsnelheid_rekenkundig_klasse4 + voertuigsnelheid_rekenkundig_klasse5)/4.0 as currentSpeed,
 rekendata_bezettingsgraad as bezettingsgraad FROM
 "anpr"."sls_data_pipelines_batch_parquet_destination_parquet")
 WHERE year(originalTimestamp)={year} AND month(originalTimestamp)={month} AND day(originalTimestamp) BETWEEN {start_day} AND {end_day}

@@ -9,4 +9,6 @@ def handle(event, context):
         state = execution['Status']['State']
         if state != 'SUCCEEDED':
             return {'AthenaState': state, 'QueryExecutionId': execution['QueryExecutionId']}
+    if len(response['UnprocessedQueryExecutionIds']) > 0:
+        return {'AthenaState': 'FAILED'}
     return {'AthenaState': 'SUCCEEDED'}

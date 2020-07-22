@@ -1,4 +1,4 @@
-INSERT INTO "anpr"."sls_data_pipelines_batch_transformed_parquet_athena"
+INSERT INTO "anpr"."sls_data_pipelines_batch_transformed"
 SELECT uniqueId, recordTimestamp, currentSpeed, bezettingsgraad, previousSpeed, trafficJamIndicator,
 trafficIntensityClass2, trafficIntensityClass3, trafficIntensityClass4, trafficIntensityClass5,
 CASE
@@ -26,7 +26,7 @@ verkeersintensiteit_klasse3 as trafficIntensityClass3,
 verkeersintensiteit_klasse4 as trafficIntensityClass4,
 verkeersintensiteit_klasse5 as trafficIntensityClass5,
 rekendata_bezettingsgraad as bezettingsgraad FROM
-"anpr"."sls_data_pipelines_batch_parquet_destination_parquet")
+"anpr"."sls_data_pipelines_batch_destination_parquet")
 WHERE year(originalTimestamp)={year} AND month(originalTimestamp)={month} AND day(originalTimestamp) BETWEEN {start_day} AND {end_day}
 AND bezettingsgraad > -1 AND uniqueId IN (32, 37, 1840, 2125, 3388, 3391, 753, 1065, 3159, 2161, 216, 1132)
 )

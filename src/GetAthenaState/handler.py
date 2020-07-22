@@ -9,6 +9,8 @@ def handle(event, context):
         state = execution['Status']['State']
         if state != 'SUCCEEDED':
             return {'AthenaState': state, 'QueryExecutionId': execution['QueryExecutionId']}
-    if len(response['UnprocessedQueryExecutionIds']) > 0:
-        return {'AthenaState': 'FAILED'}
+    for execution in response['UnprocessedQueryExecutionIds']:
+        error = execution.get('ErrorMessage', None)
+        if error is not None:
+            return {'AthenaState': 'FAILED', 'QueryExecutionId': execution['QueryExecutionId'], 'Error': error}
     return {'AthenaState': 'SUCCEEDED'}

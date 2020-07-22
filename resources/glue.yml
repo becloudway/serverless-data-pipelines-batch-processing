@@ -50,13 +50,13 @@ Resources:
   BatchTransformedTable:
     Type: AWS::Glue::Table
     Properties:
-      CatalogId: ${self:custom.DataCatalog}
+      CatalogId: "#{AWS::AccountId}"
       DatabaseName: ${self:custom.Database}
       TableInput:
         Name: sls_data_pipelines_batch_transformed
         TableType: EXTERNAL_TABLE
         Parameters:
-          compressionType: SNAPPY
+          orc.compress: SNAPPY
           has_encrypted_data: false
           EXTERNAL: TRUE
         PartitionKeys:
@@ -79,17 +79,15 @@ Resources:
             - {Name: speeddiffindicator, Type: int}
             - {Name: avgspeed2minutes, Type: double}
             - {Name: avgspeed10minutes, Type: double}
-            - {Name: year, Type: bigint}
-            - {Name: month, Type: bigint}
-            - {Name: day, Type: bigint}
-            - {Name: hour, Type: bigint}
           Compressed: True
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
           Location:
             Fn::Join:
               - ""
-              - - !ImportValue sls-data-pipelines-dev-TrafficEventsDeliveryBucketName
+              - - "s3://"
+                - !ImportValue sls-data-pipelines-dev-TrafficEventsDeliveryBucketName
                 - "/batch-transformed"
           SerdeInfo:
+            Name: sls_data_pipelines_batch_transformed
             SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe

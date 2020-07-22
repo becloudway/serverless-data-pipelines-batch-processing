@@ -189,7 +189,7 @@ functions:
         Resource:
           Fn::Join:
             - ""
-            - - "arn:aws:athena:#{AWS::Region}:#{AWS::AccountId}:workgroup/"
+            - - "arn:aws:athena:*:*:workgroup/"
               - ${self:custom.AthenaWorkGroup}
 
 resources:

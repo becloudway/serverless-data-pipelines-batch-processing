@@ -193,6 +193,9 @@ functions:
             - - "arn:aws:athena:#{AWS::Region}:#{AWS::AccountId}:workgroup/"
               - ${self:custom.AthenaWorkGroup}
 
+resources:
+  - ${file(resources/glue.yml)}
+
 stepFunctions:
   stateMachines: ${file(resources/sm.yml)}
 

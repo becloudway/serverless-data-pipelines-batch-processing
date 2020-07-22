@@ -1,0 +1,41 @@
+Resources:
+  DeliveryBucketCrawlerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: DeliveryBucketCrawlerRole
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - glue.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: DeliveryBucketCrawlerPolicy
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                Resource:
+                  - Fn::Join:
+                      - ""
+                      - - "arn:aws:s3:::"
+                        - !ImportValue sls-data-pipelines-dev-TrafficEventsDeliveryBucketName
+                        - "/destination-parquet*"
+  DeliveryBucketCrawler:
+    Type: AWS::Glue::Crawler
+    Properties:
+      Role: !GetAtt DeliveryBucketCrawlerRole.Arn
+      DatabaseName: ${self:custom.Database}
+      TablePrefix: sls_data_pipelines_batch_
+      Name: sls-data-pipelines-delivery-bucket-crawler
+      Targets:
+        S3Targets:
+          - Path:
+              Fn::Join:
+                - ""
+                - - !ImportValue sls-data-pipelines-dev-TrafficEventsDeliveryBucketName
+                  - "/destination-parquet"

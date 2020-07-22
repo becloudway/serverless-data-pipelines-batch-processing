@@ -15,7 +15,6 @@ custom:
   S3Prefix: 'destination-parquet/'
   S3BatchResultsPrefix: 'transformed-parquet-athena/'
   stage: "${opt:stage, self:provider.stage}"
-  CrawlerName: 'sls-data-pipelines-batch-parquet'
   AthenaWorkGroup: 'primary'
   Database: 'anpr'
   DataCatalog: 'AwsDataCatalog'
@@ -66,7 +65,7 @@ functions:
     layers:
       - arn:aws:lambda:eu-west-1:114300393969:layer:lumigo-python-tracer:134
     environment:
-      CRAWLER_NAME: ${self:custom.CrawlerName}
+      CRAWLER_NAME: !Ref DeliveryBucketCrawler
     iamRoleStatementsName: sls-batch-${opt:stage, self:provider.stage}-RunDataCrawler-lambdaRole
     iamRoleStatementsInherit: true
     iamRoleStatements:
@@ -83,7 +82,7 @@ functions:
     layers:
       - arn:aws:lambda:eu-west-1:114300393969:layer:lumigo-python-tracer:134
     environment:
-      CRAWLER_NAME: ${self:custom.CrawlerName}
+      CRAWLER_NAME: !Ref DeliveryBucketCrawler
     iamRoleStatementsName: sls-batch-${opt:stage, self:provider.stage}-GetCrawlerState-lambdaRole
     iamRoleStatementsInherit: true
     iamRoleStatements:

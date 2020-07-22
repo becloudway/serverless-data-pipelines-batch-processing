@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # set this to you personal mfa url
-url=arn:aws:iam::343030928329:mfa/sam
+arn=arn:aws:iam::343030928329:mfa/sam
 
 # gets secure session information from aws
-response=$(aws sts get-session-token --serial-number $url --token-code $2)
+response=$(aws sts get-session-token --serial-number $arn --token-code $2)
 
 # set variables for secure session
 export AWS_ACCESS_KEY_ID=$(jq -r '.Credentials.AccessKeyId' <<< "$response")

@@ -28,6 +28,14 @@ Runs the Athena ETL insert queries, which perform the following:
 
 Gets the states of the executed Athena queries in order to be able to check that all queries succeeded.
 
+# Instruction
+When MFA is enabled for the current AWS account, the following variables have to be exported for correct authorization 
+before running a cli command: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`. These variables can be 
+obtained with the command `aws sts get-session-token --serial-number <account-arn> --token-code <mfa-code>`. 
+A bash script `mfa.sh` is provided which automates this process. This script requires the library `jq` to be installed,
+which is used to parse the returned json from the get-session-token command. Also make sure to replace the arn variable
+with your own account arn. The script can be used as follows: `./mfa.sh "<cli-command>" <mfa-code>`.
+
 # Data
 The Athena ETL queries process the historical event data that is contained within the S3 delivery bucket.
 This is what the processed data looks like:

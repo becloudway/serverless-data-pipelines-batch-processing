@@ -11,6 +11,8 @@ Resources:
                 - glue.amazonaws.com
             Action:
               - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole
       Policies:
         - PolicyName: DeliveryBucketCrawlerPolicy
           PolicyDocument:

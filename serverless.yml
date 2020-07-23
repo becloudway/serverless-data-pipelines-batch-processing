@@ -103,7 +103,7 @@ functions:
       DB: ${self:custom.Database}
       CATALOG: ${self:custom.DataCatalog}
       WORKGROUP: ${self:custom.AthenaWorkGroup}
-      OUTPUT: 's3://sls-data-pipelines-dev-deliverybucket-1ct0hgst9xpby/transformed-parquet-athena/temp'
+      OUTPUT: 's3://sls-data-pipelines-dev-deliverybucket-1ct0hgst9xpby/batch-transformed/temp'
     iamRoleStatementsName: sls-batch-${opt:stage, self:provider.stage}-RunETLInsertAthena-lambdaRole
     iamRoleStatementsInherit: true
     iamRoleStatements:
@@ -113,7 +113,7 @@ functions:
         Resource:
           Fn::Join:
             - ""
-            - - "arn:aws:athena:*:*:workgroup/"
+            - - "arn:aws:athena:#{AWS::Region}:#{AWS::AccountId}:workgroup/"
               - ${self:custom.AthenaWorkGroup}
       - Effect: "Allow"
         Action:
@@ -189,7 +189,7 @@ functions:
         Resource:
           Fn::Join:
             - ""
-            - - "arn:aws:athena:*:*:workgroup/"
+            - - "arn:aws:athena:#{AWS::Region}:#{AWS::AccountId}:workgroup/"
               - ${self:custom.AthenaWorkGroup}
 
 resources:

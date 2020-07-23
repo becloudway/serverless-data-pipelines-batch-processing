@@ -185,7 +185,7 @@ functions:
     iamRoleStatements:
       - Effect: "Allow"
         Action:
-          - athena:GetQueryExecution
+          - athena:BatchGetQueryExecution
         Resource:
           Fn::Join:
             - ""

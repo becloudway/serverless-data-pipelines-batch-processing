@@ -8,7 +8,7 @@ BatchProcessingStateMachine:
     States:
       RunDataCrawler:
         Type: Task
-        Resource: arn:aws:lambda:eu-west-1:343030928329:function:${self:service}-${opt:stage}-RunDataCrawler
+        Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-RunDataCrawler
         Next: WaitCrawler
       WaitCrawler:
         Type: Wait
@@ -16,7 +16,7 @@ BatchProcessingStateMachine:
         Next: GetCrawlerState
       GetCrawlerState:
         Type: Task
-        Resource: arn:aws:lambda:eu-west-1:343030928329:function:${self:service}-${opt:stage}-GetCrawlerState
+        Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-GetCrawlerState
         Next: CheckCrawlerState
       CheckCrawlerState:
         Type: Choice
@@ -40,7 +40,7 @@ BatchProcessingStateMachine:
         Error: "Crawler run has failed"
       RunETLInsertAthena:
         Type: Task
-        Resource: arn:aws:lambda:eu-west-1:343030928329:function:${self:service}-${opt:stage}-RunETLInsertAthena
+        Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-RunETLInsertAthena
         Next: WaitAthena
       WaitAthena:
         Type: Wait
@@ -48,7 +48,7 @@ BatchProcessingStateMachine:
         Next: GetAthenaState
       GetAthenaState:
         Type: Task
-        Resource: arn:aws:lambda:eu-west-1:343030928329:function:${self:service}-${opt:stage}-GetAthenaState
+        Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-GetAthenaState
         Next: CheckAthenaState
       CheckAthenaState:
         Type: Choice

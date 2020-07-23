@@ -3,11 +3,11 @@ SELECT uniqueId, recordTimestamp, currentSpeed, bezettingsgraad, previousSpeed,
 CASE WHEN (avgSpeed2Minutes BETWEEN 0 AND 40) THEN 1
 WHEN (avgSpeed2Minutes BETWEEN 41 AND 250) THEN 0
 ELSE -1 END as trafficJamIndicator,
-CASE WHEN (avgSpeed10Minutes BETWEEN 0 AND 40) THEN 1
-WHEN (avgSpeed10Minutes BETWEEN 41 AND 250) THEN 0
+CASE WHEN (avgSpeed20Minutes BETWEEN 0 AND 40) THEN 1
+WHEN (avgSpeed20Minutes BETWEEN 41 AND 250) THEN 0
 ELSE -1 END as trafficJamIndicatorLong,
 trafficIntensityClass2, trafficIntensityClass3, trafficIntensityClass4, trafficIntensityClass5,
-speedDiffindicator, avgSpeed2Minutes, avgSpeed10Minutes, year, month, day, hour
+speedDiffindicator, avgSpeed2Minutes, avgSpeed20Minutes, year, month, day, hour
 FROM
 (
 SELECT uniqueId, recordTimestamp, currentSpeed, bezettingsgraad, previousSpeed,
@@ -17,7 +17,7 @@ WHEN (currentSpeed - previousSpeed >= 20) THEN 1
 WHEN (currentSpeed - previousSpeed <= -20) THEN -1
 ELSE 0 END AS speedDiffindicator,
 avg(NULLIF(currentSpeed, -1)) OVER (PARTITION BY uniqueId ORDER BY minutes ROWS BETWEEN 2 PRECEDING AND 0 FOLLOWING) AS avgSpeed2Minutes,
-avg(NULLIF(currentSpeed, -1)) OVER (PARTITION BY uniqueId ORDER BY minutes ROWS BETWEEN 10 PRECEDING AND 0 FOLLOWING) AS avgSpeed10Minutes,
+avg(NULLIF(currentSpeed, -1)) OVER (PARTITION BY uniqueId ORDER BY minutes ROWS BETWEEN 20 PRECEDING AND 0 FOLLOWING) AS avgSpeed20Minutes,
 year(originalTimestamp) as year, month(originalTimestamp) as month, day(originalTimestamp) as day, hour(originalTimestamp) as hour FROM
 (
 SELECT uniqueId, recordTimestamp, originalTimestamp, currentSpeed, bezettingsgraad, trafficIntensityClass2,

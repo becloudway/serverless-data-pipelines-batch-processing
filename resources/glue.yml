@@ -72,6 +72,7 @@ Resources:
             - {Name: bezettingsgraad, Type: int}
             - {Name: previousspeed, Type: double}
             - {Name: trafficjamindicator, Type: int}
+            - {Name: trafficjamindicatorlong, Type: int}
             - {Name: trafficintensityclass2, Type: int}
             - {Name: trafficintensityclass3, Type: int}
             - {Name: trafficintensityclass4, Type: int}

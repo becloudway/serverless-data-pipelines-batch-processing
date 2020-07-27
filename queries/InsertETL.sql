@@ -25,7 +25,15 @@ trafficIntensityClass3, trafficIntensityClass4, trafficIntensityClass5,
 date_diff('minute', DATE '2000-01-01', originalTimestamp) as minutes,
 lag(currentSpeed, 1) OVER (PARTITION BY uniqueId ORDER BY originalTimestamp) as previousSpeed FROM
 (
-SELECT unieke_id as uniqueId,
+SELECT MAX(uniqueId) as uniqueId, lve_nr, originalTimestamp, recordTimestamp, AVG(currentSpeed) as currentSpeed,
+TRY(CAST(SUM(trafficIntensityClass2) AS INTEGER)) as trafficIntensityClass2,
+TRY(CAST(SUM(trafficIntensityClass3) AS INTEGER)) as trafficIntensityClass3,
+TRY(CAST(SUM(trafficIntensityClass4) AS INTEGER)) as trafficIntensityClass4,
+TRY(CAST(SUM(trafficIntensityClass5) AS INTEGER)) as trafficIntensityClass5,
+TRY(CAST(ROUND(AVG(bezettingsgraad)) AS INTEGER)) as bezettingsgraad FROM
+(
+SELECT lve_nr,
+unieke_id as uniqueId,
 from_unixtime(CAST(tijd_waarneming as INTEGER)) as originalTimestamp,
 tijd_waarneming as recordTimestamp,
 CASE WHEN verkeersintensiteit_klasse2 + verkeersintensiteit_klasse3 + verkeersintensiteit_klasse4 + verkeersintensiteit_klasse5 > 0 THEN
@@ -43,6 +51,8 @@ verkeersintensiteit_klasse5 as trafficIntensityClass5,
 verkeersintensiteit_klasse2 + verkeersintensiteit_klasse3 + verkeersintensiteit_klasse4 + verkeersintensiteit_klasse5 as bezettingsgraad FROM
 "anpr"."sls_data_pipelines_batch_destination_parquet")
 WHERE year(originalTimestamp)={year} AND month(originalTimestamp)={month} AND day(originalTimestamp) BETWEEN {start_day} AND {end_day}
-AND bezettingsgraad > -1 AND uniqueId IN (32, 37, 1840, 2125, 3388, 3391, 753, 1065, 3159, 2161, 216, 1132)
+AND bezettingsgraad > -1 AND uniqueId IN (32, 37, 1840, 2125, 3388, 3391, 753, 1065, 3159, 2161, 216, 217, 1132)
+GROUP BY lve_nr, originalTimestamp, recordTimestamp
+)
 )
 )

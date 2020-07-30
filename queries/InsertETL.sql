@@ -16,13 +16,12 @@ CASE
 WHEN (currentSpeed - previousSpeed >= 20) THEN 1
 WHEN (currentSpeed - previousSpeed <= -20) THEN -1
 ELSE 0 END AS speedDiffindicator,
-avg(NULLIF(currentSpeed, -1)) OVER (PARTITION BY uniqueId ORDER BY minutes ROWS BETWEEN 2 PRECEDING AND 0 FOLLOWING) AS avgSpeed2Minutes,
-avg(NULLIF(currentSpeed, -1)) OVER (PARTITION BY uniqueId ORDER BY minutes ROWS BETWEEN 20 PRECEDING AND 0 FOLLOWING) AS avgSpeed20Minutes,
+avg(NULLIF(currentSpeed, -1)) OVER (PARTITION BY uniqueId ORDER BY originalTimestamp ROWS BETWEEN 1 PRECEDING AND 0 FOLLOWING) AS avgSpeed2Minutes,
+avg(NULLIF(currentSpeed, -1)) OVER (PARTITION BY uniqueId ORDER BY originalTimestamp ROWS BETWEEN 19 PRECEDING AND 0 FOLLOWING) AS avgSpeed20Minutes,
 year(originalTimestamp) as year, month(originalTimestamp) as month, day(originalTimestamp) as day, hour(originalTimestamp) as hour FROM
 (
 SELECT uniqueId, recordTimestamp, originalTimestamp, currentSpeed, bezettingsgraad, trafficIntensityClass2,
 trafficIntensityClass3, trafficIntensityClass4, trafficIntensityClass5,
-date_diff('minute', DATE '2000-01-01', originalTimestamp) as minutes,
 lag(currentSpeed, 1) OVER (PARTITION BY uniqueId ORDER BY originalTimestamp) as previousSpeed FROM
 (
 SELECT MAX(uniqueId) as uniqueId, lve_nr, originalTimestamp, recordTimestamp, AVG(currentSpeed) as currentSpeed,

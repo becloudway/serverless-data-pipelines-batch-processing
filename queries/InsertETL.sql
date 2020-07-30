@@ -16,8 +16,8 @@ CASE
 WHEN (currentSpeed - previousSpeed >= 20) THEN 1
 WHEN (currentSpeed - previousSpeed <= -20) THEN -1
 ELSE 0 END AS speedDiffindicator,
-avg(NULLIF(currentSpeed, -1)) OVER (PARTITION BY uniqueId ORDER BY originalTimestamp ROWS BETWEEN 1 PRECEDING AND 0 FOLLOWING) AS avgSpeed2Minutes,
-avg(NULLIF(currentSpeed, -1)) OVER (PARTITION BY uniqueId ORDER BY originalTimestamp ROWS BETWEEN 19 PRECEDING AND 0 FOLLOWING) AS avgSpeed20Minutes,
+avg(currentSpeed) OVER (PARTITION BY uniqueId ORDER BY originalTimestamp ROWS BETWEEN 1 PRECEDING AND 0 FOLLOWING) AS avgSpeed2Minutes,
+avg(currentSpeed) OVER (PARTITION BY uniqueId ORDER BY originalTimestamp ROWS BETWEEN 19 PRECEDING AND 0 FOLLOWING) AS avgSpeed20Minutes,
 year(originalTimestamp) as year, month(originalTimestamp) as month, day(originalTimestamp) as day, hour(originalTimestamp) as hour FROM
 (
 SELECT uniqueId, recordTimestamp, originalTimestamp, currentSpeed, bezettingsgraad, trafficIntensityClass2,
@@ -41,7 +41,7 @@ CASE WHEN verkeersintensiteit_klasse2 + verkeersintensiteit_klasse3 + verkeersin
 CASE WHEN verkeersintensiteit_klasse3 > 0 THEN 1 ELSE 0 END +
 CASE WHEN verkeersintensiteit_klasse4 > 0 THEN 1 ELSE 0 END +
 CASE WHEN verkeersintensiteit_klasse5 > 0 THEN 1 ELSE 0 END)
-ELSE -1 END
+END
 as currentSpeed,
 verkeersintensiteit_klasse2 as trafficIntensityClass2,
 verkeersintensiteit_klasse3 as trafficIntensityClass3,

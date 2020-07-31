@@ -8,24 +8,21 @@ See [becloudway/serverless-data-pipelines](https://github.com/becloudway/serverl
 The state machine consists of 4 tasks (RunDataCrawler, GetCrawlerState, RunETLInsertAthena and CheckAthenaState), 
 combined with wait and choice states.
 
-**RunDataCrawler**
-
+####RunDataCrawler
 Runs the data crawler that explores the event history data contained in the delivery bucket.
 
-**GetCrawlerState**
-
+####GetCrawlerState
 Gets the state of the data crawler in order to be able to check that the state of the crawler is 'SUCCEEDED' before 
 moving on to the execution of the Athena ETL query.
 
-**RunETLInsertAthena**
-
+####RunETLInsertAthena
 Runs the Athena ETL insert queries, which perform the following:
-* Computation of aggregate values and traffic jam indicator
+* Computation of aggregate values and derived fields
 * Selection of relevant information
+* Grouping of locations by lve_nr (natural grouping, e.g. a set of lanes on the same road)
 * Repartitioning of data by event time (year, month, day)
 
-**GetAthenaState**
-
+####GetAthenaState
 Gets the states of the executed Athena queries in order to be able to check that all queries succeeded.
 
 # Instruction
@@ -38,16 +35,36 @@ with your own account arn. The script can be used as follows: `./mfa.sh "<cli-co
 
 # Data
 The Athena ETL queries process the historical event data that is contained within the S3 delivery bucket.
-This is what the processed data looks like:
+This is what the processed data looks like (special thanks to [convertcsv.com](https://www.convertcsv.com/csv-to-markdown.htm)):
 
-| uniqueid | recordtimestamp | currentspeed | bezettingsgraad | previousspeed | trafficjamindicator | trafficintensityclass2 | trafficintensityclass3 | trafficintensityclass4 | trafficintensityclass5 | speeddiffindicator | avgspeed2minutes   | avgspeed10minutes  |
-| -------- | --------------- | ------------ | --------------- | ------------- | ------------------- | ---------------------- | ---------------------- | ---------------------- | ---------------------- | ------------------ | ------------------ | ------------------ |
-| 37       | 1594684800      | 49.75        | 1               |               | 0                   | 1                      | 0                      | 0                      | 1                      | 0                  | 49.75              | 49.75              |
-| 37       | 1594684860      | 77.75        | 2               | 49.75         | 0                   | 1                      | 3                      | 0                      | 1                      | 1                  | 63.75              | 63.75              |
-| 37       | 1594684920      | 75.0         | 4               | 77.75         | 0                   | 0                      | 2                      | 1                      | 2                      | 0                  | 67.5               | 67.5               |
-| 37       | 1594684980      | 73.5         | 1               | 75.0          | 0                   | 1                      | 1                      | 0                      | 1                      | 0                  | 75.41666666666667  | 69.0               |
-| 37       | 1594685040      | 28.5         | 0               | 73.5          | 0                   | 0                      | 1                      | 0                      | 0                      | -1                 | 59.0               | 60.9               |
-| 37       | 1594685100      | 54.0         | 3               | 28.5          | 0                   | 0                      | 1                      | 0                      | 2                      | 1                  | 52.0               | 59.75              |
-| 37       | 1594685160      | 73.0         | 2               | 54.0          | 0                   | 1                      | 2                      | 0                      | 1                      | 0                  | 51.833333333333336 | 61.642857142857146 |
+|uniqueid|recordtimestamp|currentspeed|bezettingsgraad|previousspeed|trafficjamindicator|trafficjamindicatorlong|trafficintensityclass2|trafficintensityclass3|trafficintensityclass4|trafficintensityclass5|speeddiffindicator|avgspeed2minutes|avgspeed10minutes|year|month|day|hour|
+|--------|---------------|------------|---------------|-------------|-------------------|-----------------------|----------------------|----------------------|----------------------|----------------------|------------------|----------------|-----------------|----|-----|---|----|
+|3159    |1594702800     |97.0        |12             |92.0         |0                  |0                      |4                     |2                     |1                     |5                     |0                 |94.5            |97.75            |2020|7    |14 |5   |
+|3159    |1594702860     |83.0        |14             |97.0         |0                  |0                      |4                     |1                     |2                     |7                     |0                 |90.0            |96.95            |2020|7    |14 |5   |
+|3159    |1594702920     |96.0        |15             |83.0         |0                  |0                      |7                     |1                     |0                     |7                     |0                 |89.5            |96.6             |2020|7    |14 |5   |
+|3159    |1594702980     |94.0        |14             |96.0         |0                  |0                      |6                     |4                     |1                     |3                     |0                 |95.0            |95.7             |2020|7    |14 |5   |
+|3159    |1594703040     |86.0        |13             |94.0         |0                  |0                      |5                     |1                     |2                     |5                     |0                 |90.0            |94.9             |2020|7    |14 |5   |
+|3159    |1594703100     |94.0        |14             |86.0         |0                  |0                      |6                     |2                     |3                     |3                     |0                 |90.0            |94.9             |2020|7    |14 |5   |
+|3159    |1594703160     |99.0        |13             |94.0         |0                  |0                      |7                     |0                     |2                     |4                     |0                 |96.5            |95.05            |2020|7    |14 |5   |
 
 The processed data contains useful information for visualizations (in e.g. Quicksight).
+
+####Field definitions
+* *uniqueid*: unique id of the location of the measurement
+* *recordtimestamp*: unix timestamp (in seconds since epoch) of the measurement
+* *bezettingsgraad*: number of vehicles of all vehicle classes that passed during the measurement period (60 seconds)
+* *trafficintensityclass2*: number of passing vehicles of vehicle class 2 during the measurement period
+* *trafficintensityclass3*: number of passing vehicles of vehicle class 3 during the measurement period
+* *trafficintensityclass4*: number of passing vehicles of vehicle class 4 during the measurement period
+* *trafficintensityclass5*: number of passing vehicles of vehicle class 5 during the measurement period
+* *currentspeed*: average speed of all vehicle classes
+* *previousspeed*: currentspeed of the previous measurement period
+* *speeddiffindicator*: 1 if speeddiff is greater than or equal to 20, -1 if speeddiff is less than or equal to -20, 0 otherwise
+* *avgspeed2minutes*: average of currentspeed of current measurement and currentspeed of previous measurement
+* *avgspeed20minutes*: average of currentspeed of current measurement and currentspeed of 19 previous measurements
+* *trafficjamindicator*: 1 if avgspeed2minutes is less than 40, 0 if avgspeed2minutes is less than 250, -1 otherwise
+* *trafficjamindicatorlong*: same as trafficjamindicator, but for avgspeed20minutes
+* *year*: year derived from the record timestamp
+* *month*: month derived from the record timestamp
+* *day*: day derived from the record timestamp
+* *hour*: hour derived from the record timestamp

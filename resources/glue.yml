@@ -78,8 +78,8 @@ Resources:
             - {Name: trafficintensityclass4, Type: int}
             - {Name: trafficintensityclass5, Type: int}
             - {Name: speeddiffindicator, Type: int}
-            - {Name: avgspeed2minutes, Type: double}
-            - {Name: avgspeed10minutes, Type: double}
+            - {Name: avgspeed3minutes, Type: double}
+            - {Name: avgspeed20minutes, Type: double}
           Compressed: True
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat

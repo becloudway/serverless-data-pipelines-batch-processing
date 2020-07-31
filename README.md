@@ -37,7 +37,7 @@ with your own account arn. The script can be used as follows: `./mfa.sh "<cli-co
 The Athena ETL queries process the historical event data that is contained within the S3 delivery bucket.
 This is what the processed data looks like (special thanks to [convertcsv.com](https://www.convertcsv.com/csv-to-markdown.htm)):
 
-|uniqueid|recordtimestamp|currentspeed|bezettingsgraad|previousspeed|trafficjamindicator|trafficjamindicatorlong|trafficintensityclass2|trafficintensityclass3|trafficintensityclass4|trafficintensityclass5|speeddiffindicator|avgspeed2minutes|avgspeed10minutes|year|month|day|hour|
+|uniqueid|recordtimestamp|currentspeed|bezettingsgraad|previousspeed|trafficjamindicator|trafficjamindicatorlong|trafficintensityclass2|trafficintensityclass3|trafficintensityclass4|trafficintensityclass5|speeddiffindicator|avgspeed3minutes|avgspeed20minutes|year|month|day|hour|
 |--------|---------------|------------|---------------|-------------|-------------------|-----------------------|----------------------|----------------------|----------------------|----------------------|------------------|----------------|-----------------|----|-----|---|----|
 |3159    |1594702800     |97.0        |12             |92.0         |0                  |0                      |4                     |2                     |1                     |5                     |0                 |94.5            |97.75            |2020|7    |14 |5   |
 |3159    |1594702860     |83.0        |14             |97.0         |0                  |0                      |4                     |1                     |2                     |7                     |0                 |90.0            |96.95            |2020|7    |14 |5   |
@@ -60,7 +60,7 @@ The processed data contains useful information for visualizations (in e.g. Quick
 * *currentspeed*: average speed of all vehicle classes (NULL if no vehicles have passed)
 * *previousspeed*: currentspeed of the previous measurement period
 * *speeddiffindicator*: 1 if speeddiff is greater than or equal to 20, -1 if speeddiff is less than or equal to -20, 0 otherwise
-* *avgspeed2minutes*: average of currentspeed of current measurement and currentspeed of previous measurement (NULL values not included in average)
+* *avgspeed3minutes*: average of currentspeed of current measurement and currentspeed of previous measurement (NULL values not included in average)
 * *avgspeed20minutes*: average of currentspeed of current measurement and currentspeed of 19 previous measurements (NULL values not included in average)
 * *trafficjamindicator*: 1 if avgspeed2minutes is less than 40, 0 if avgspeed2minutes is less than 250, -1 otherwise
 * *trafficjamindicatorlong*: same as trafficjamindicator, but for avgspeed20minutes

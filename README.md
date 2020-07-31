@@ -8,21 +8,21 @@ See [becloudway/serverless-data-pipelines](https://github.com/becloudway/serverl
 The state machine consists of 4 tasks (RunDataCrawler, GetCrawlerState, RunETLInsertAthena and CheckAthenaState), 
 combined with wait and choice states.
 
-####RunDataCrawler
+#### RunDataCrawler
 Runs the data crawler that explores the event history data contained in the delivery bucket.
 
-####GetCrawlerState
+#### GetCrawlerState
 Gets the state of the data crawler in order to be able to check that the state of the crawler is 'SUCCEEDED' before 
 moving on to the execution of the Athena ETL query.
 
-####RunETLInsertAthena
+#### RunETLInsertAthena
 Runs the Athena ETL insert queries, which perform the following:
 * Computation of aggregate values and derived fields
 * Selection of relevant information
 * Grouping of locations by lve_nr (natural grouping, e.g. a set of lanes on the same road)
 * Repartitioning of data by event time (year, month, day)
 
-####GetAthenaState
+#### GetAthenaState
 Gets the states of the executed Athena queries in order to be able to check that all queries succeeded.
 
 # Instruction
@@ -49,7 +49,7 @@ This is what the processed data looks like (special thanks to [convertcsv.com](h
 
 The processed data contains useful information for visualizations (in e.g. Quicksight).
 
-####Field definitions
+#### Field definitions
 * *uniqueid*: unique id of the location of the measurement
 * *recordtimestamp*: unix timestamp (in seconds since epoch) of the measurement
 * *bezettingsgraad*: number of vehicles of all vehicle classes that passed during the measurement period (60 seconds)

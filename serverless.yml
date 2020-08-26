@@ -18,7 +18,6 @@ custom:
   AthenaWorkGroup: 'primary'
   Database: 'anpr'
   DataCatalog: 'AwsDataCatalog'
-  Table: 'sls_data_pipelines_batch_transformed_parquet_athena'
 
 provider:
   name: aws

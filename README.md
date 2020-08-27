@@ -2,7 +2,7 @@
 This is an implementation of the batch processing state machine for the serverless data pipeline for Flanders traffic analysis.
 See [becloudway/serverless-data-pipelines](https://github.com/becloudway/serverless-data-pipeline) for more information on the general scope of the project.
 
-# Architecture
+## Architecture
 ![State machine](img/statemachine.png)
 
 The state machine consists of 4 tasks (RunDataCrawler, GetCrawlerState, RunETLInsertAthena and CheckAthenaState), 
@@ -25,7 +25,7 @@ Runs the Athena ETL insert queries, which perform the following:
 #### GetAthenaState
 Gets the states of the executed Athena queries in order to be able to check that all queries succeeded.
 
-# Instruction
+## Instruction
 When MFA is enabled for the current AWS account, the following variables have to be exported for correct authorization 
 before running a cli command: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`. These variables can be 
 obtained with the command `aws sts get-session-token --serial-number <account-arn> --token-code <mfa-code>`. 
@@ -33,7 +33,7 @@ A bash script `mfa.sh` is provided which automates this process. This script req
 which is used to parse the returned json from the get-session-token command. Also make sure to replace the arn variable
 with your own account arn. The script can be used as follows: `./mfa.sh "<cli-command>" <mfa-code>`.
 
-# Data
+## Data
 The Athena ETL queries process the historical event data that is contained within the S3 delivery bucket.
 This is what the processed data looks like (special thanks to [convertcsv.com](https://www.convertcsv.com/csv-to-markdown.htm)):
 
@@ -68,3 +68,9 @@ The processed data contains useful information for visualizations (in e.g. Quick
 * *month*: month derived from the record timestamp
 * *day*: day derived from the record timestamp
 * *hour*: hour derived from the record timestamp
+
+## AWS Integration
+After deployment to AWS, the state machine can be executed manually via the Step Functions console.
+An optional JSON input with keys 'year', 'month', 'day' can be provided to indicate that the ETL should start processing events starting from a given date.
+If this input is not provided, the ETL will process all events from yesterday.
+Additionally, the serverless configuration schedules the state machine to be ran every day through a cloud-watch event rule (to process all events from the day before).

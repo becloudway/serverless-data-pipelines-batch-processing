@@ -73,4 +73,4 @@ The processed data contains useful information for visualizations (in e.g. Quick
 After deployment to AWS, the state machine can be executed manually via the Step Functions console.
 An optional JSON input with keys 'year', 'month', 'day' can be provided to indicate that the ETL should start processing events starting from a given date.
 If this input is not provided, the ETL will process all events from yesterday.
-Additionally, the serverless configuration schedules the state machine to be ran every day through a cloud-watch event rule (to process all events from the day before).
+Additionally, the serverless configuration schedules the state machine to be ran every day through an AWS EventBridge event rule (to process all events from the day before).

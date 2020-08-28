@@ -62,7 +62,7 @@ The processed data contains useful information for visualizations (in e.g. Quick
 * *speeddiffindicator*: 1 if speeddiff is greater than or equal to 20, -1 if speeddiff is less than or equal to -20, 0 otherwise
 * *avgspeed3minutes*: average of currentspeed of current measurement and currentspeed of previous measurement (NULL values not included in average)
 * *avgspeed20minutes*: average of currentspeed of current measurement and currentspeed of 19 previous measurements (NULL values not included in average)
-* *trafficjamindicator*: 1 if avgspeed2minutes is less than 40, 0 if avgspeed2minutes is less than 250, -1 otherwise
+* *trafficjamindicator*: 1 if avgspeed3minutes is less than 40, 0 if avgspeed3minutes is less than 250, -1 otherwise
 * *trafficjamindicatorlong*: same as trafficjamindicator, but for avgspeed20minutes
 * *year*: year derived from the record timestamp
 * *month*: month derived from the record timestamp

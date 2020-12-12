@@ -16,7 +16,7 @@ custom:
   S3BatchResultsPrefix: "transformed-parquet-athena/"
   stage: ${opt:stage, self:provider.stage}
   AthenaWorkGroup: "primary"
-  Database: "anpr"
+  Database: "traffic"
   DataCatalog: "AwsDataCatalog"
 
 provider:
@@ -102,7 +102,7 @@ functions:
       DB: ${self:custom.Database}
       CATALOG: ${self:custom.DataCatalog}
       WORKGROUP: ${self:custom.AthenaWorkGroup}
-      OUTPUT: "s3://sls-data-pipelines-dev-deliverybucket-1ct0hgst9xpby/batch-transformed/temp"
+      OUTPUT: "s3://sls-data-pipelines-dev-deliverybucket-1hs2feakqz1ca/batch-transformed/temp"
     iamRoleStatementsName: sls-batch-${opt:stage, self:provider.stage}-RunETLInsertAthena-lambdaRole
     iamRoleStatementsInherit: true
     iamRoleStatements:

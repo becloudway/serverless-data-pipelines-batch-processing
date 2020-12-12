@@ -47,6 +47,91 @@ Resources:
                 - ""
                 - - !ImportValue sls-data-pipelines-dev-TrafficEventsDeliveryBucketName
                   - "/destination-parquet"
+  ParquetSourceTable:
+    Type: AWS::Glue::Table
+    Properties:
+      CatalogId: "#{AWS::AccountId}"
+      DatabaseName: ${self:custom.Database}
+      TableInput:
+        Name: sls_data_pipelines_batch_destination_parquet
+        TableType: EXTERNAL_TABLE
+        Parameters:
+          orc.compress: SNAPPY
+          has_encrypted_data: false
+          EXTERNAL: TRUE
+        PartitionKeys:
+          - { Name: year, Type: bigint }
+          - { Name: month, Type: bigint }
+          - { Name: day, Type: bigint }
+          - { Name: hour, Type: bigint }
+        StorageDescriptor:
+          Columns:
+            - Name: beschrijvende_id
+              Type: string
+            - Name: unieke_id
+              Type: int
+            - Name: lve_nr
+              Type: int
+            - Name: tijd_waarneming
+              Type: int
+            - Name: tijd_laatst_gewijzigd
+              Type: string
+            - Name: actueel_publicatie
+              Type: string
+            - Name: beschikbaar
+              Type: int
+            - Name: defect
+              Type: int
+            - Name: geldig
+              Type: int
+            - Name: verkeersintensiteit_klasse1
+              Type: int
+            - Name: voertuigsnelheid_rekenkundig_klasse1
+              Type: int
+            - Name: voertuigsnelheid_harmonisch_klasse1
+              Type: int
+            - Name: verkeersintensiteit_klasse2
+              Type: int
+            - Name: voertuigsnelheid_rekenkundig_klasse2
+              Type: int
+            - Name: voertuigsnelheid_harmonisch_klasse2
+              Type: int
+            - Name: verkeersintensiteit_klasse3
+              Type: int
+            - Name: voertuigsnelheid_rekenkundig_klasse3
+              Type: int
+            - Name: voertuigsnelheid_harmonisch_klasse3
+              Type: int
+            - Name: verkeersintensiteit_klasse4
+              Type: int
+            - Name: voertuigsnelheid_rekenkundig_klasse4
+              Type: int
+            - Name: voertuigsnelheid_harmonisch_klasse4
+              Type: int
+            - Name: verkeersintensiteit_klasse5
+              Type: int
+            - Name: voertuigsnelheid_rekenkundig_klasse5
+              Type: int
+            - Name: voertuigsnelheid_harmonisch_klasse5
+              Type: int
+            - Name: rekendata_bezettingsgraad
+              Type: int
+            - Name: rekendata_beschikbaarheidsgraad
+              Type: int
+            - Name: rekendata_onrustigheid
+              Type: int
+          Compressed: False
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          Location:
+            Fn::Join:
+              - ""
+              - - "s3://"
+                - !ImportValue sls-data-pipelines-dev-TrafficEventsDeliveryBucketName
+                - "/destination"
+          SerdeInfo:
+            Name: sls_data_pipelines_batch_destination_parquet
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
   BatchTransformedTable:
     Type: AWS::Glue::Table
     Properties:
@@ -60,26 +145,26 @@ Resources:
           has_encrypted_data: false
           EXTERNAL: TRUE
         PartitionKeys:
-          - {Name: year, Type: bigint}
-          - {Name: month, Type: bigint}
-          - {Name: day, Type: bigint}
-          - {Name: hour, Type: bigint}
+          - { Name: year, Type: bigint }
+          - { Name: month, Type: bigint }
+          - { Name: day, Type: bigint }
+          - { Name: hour, Type: bigint }
         StorageDescriptor:
           Columns:
-            - {Name: uniqueid, Type: int}
-            - {Name: recordtimestamp, Type: bigint}
-            - {Name: currentspeed, Type: double}
-            - {Name: bezettingsgraad, Type: int}
-            - {Name: previousspeed, Type: double}
-            - {Name: trafficjamindicator, Type: int}
-            - {Name: trafficjamindicatorlong, Type: int}
-            - {Name: trafficintensityclass2, Type: int}
-            - {Name: trafficintensityclass3, Type: int}
-            - {Name: trafficintensityclass4, Type: int}
-            - {Name: trafficintensityclass5, Type: int}
-            - {Name: speeddiffindicator, Type: int}
-            - {Name: avgspeed3minutes, Type: double}
-            - {Name: avgspeed20minutes, Type: double}
+            - { Name: uniqueid, Type: int }
+            - { Name: recordtimestamp, Type: bigint }
+            - { Name: currentspeed, Type: double }
+            - { Name: bezettingsgraad, Type: int }
+            - { Name: previousspeed, Type: double }
+            - { Name: trafficjamindicator, Type: int }
+            - { Name: trafficjamindicatorlong, Type: int }
+            - { Name: trafficintensityclass2, Type: int }
+            - { Name: trafficintensityclass3, Type: int }
+            - { Name: trafficintensityclass4, Type: int }
+            - { Name: trafficintensityclass5, Type: int }
+            - { Name: speeddiffindicator, Type: int }
+            - { Name: avgspeed3minutes, Type: double }
+            - { Name: avgspeed20minutes, Type: double }
           Compressed: True
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat

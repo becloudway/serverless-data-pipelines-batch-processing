@@ -33,6 +33,9 @@ A bash script `mfa.sh` is provided which automates this process. This script req
 which is used to parse the returned json from the get-session-token command. Also make sure to replace the arn variable
 with your own account arn. The script can be used as follows: `./mfa.sh "<cli-command>" <mfa-code>`.
 
+### Deploy 
+
+
 ## Data
 The Athena ETL queries process the historical event data that is contained within the S3 delivery bucket.
 This is what the processed data looks like (special thanks to [convertcsv.com](https://www.convertcsv.com/csv-to-markdown.htm)):

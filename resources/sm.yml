@@ -8,7 +8,7 @@ BatchProcessingStateMachine:
     States:
       RunDataCrawler:
         Type: Task
-        Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-RunDataCrawler
+        Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage, self:provider.stage}-RunDataCrawler
         Next: WaitCrawler
       WaitCrawler:
         Type: Wait
@@ -16,23 +16,23 @@ BatchProcessingStateMachine:
         Next: GetCrawlerState
       GetCrawlerState:
         Type: Task
-        Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-GetCrawlerState
+        Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage, self:provider.stage}-GetCrawlerState
         Next: CheckCrawlerState
       CheckCrawlerState:
         Type: Choice
         Default: WaitCrawler
         Choices:
           - And:
-            - Variable: '$.CrawlerState'
-              StringEquals: READY
-            - Variable: '$.CrawlerStatus'
-              StringEquals: SUCCEEDED
+              - Variable: "$.CrawlerState"
+                StringEquals: READY
+              - Variable: "$.CrawlerStatus"
+                StringEquals: SUCCEEDED
             Next: RunETLInsertAthena
           - And:
-            - Variable: '$.CrawlerState'
-              StringEquals: READY
-            - Variable: '$.CrawlerStatus'
-              StringEquals: FAILED
+              - Variable: "$.CrawlerState"
+                StringEquals: READY
+              - Variable: "$.CrawlerStatus"
+                StringEquals: FAILED
             Next: CrawlerFailed
       CrawlerFailed:
         Type: Fail
@@ -40,7 +40,7 @@ BatchProcessingStateMachine:
         Error: "Crawler run has failed"
       RunETLInsertAthena:
         Type: Task
-        Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-RunETLInsertAthena
+        Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage, self:provider.stage}-RunETLInsertAthena
         Next: WaitAthena
       WaitAthena:
         Type: Wait
@@ -48,16 +48,16 @@ BatchProcessingStateMachine:
         Next: GetAthenaState
       GetAthenaState:
         Type: Task
-        Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-GetAthenaState
+        Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage, self:provider.stage}-GetAthenaState
         Next: CheckAthenaState
       CheckAthenaState:
         Type: Choice
         Default: WaitAthena
         Choices:
-          - Variable: '$.AthenaState'
+          - Variable: "$.AthenaState"
             StringEquals: SUCCEEDED
             Next: SuccessEndState
-          - Variable: '$.AthenaState'
+          - Variable: "$.AthenaState"
             StringEquals: FAILED
             Next: AthenaFailed
       AthenaFailed:

@@ -1,4 +1,4 @@
-INSERT INTO "anpr"."sls_data_pipelines_batch_transformed"
+INSERT INTO "traffic"."sls_data_pipelines_batch_transformed"
 SELECT uniqueId, recordTimestamp, currentSpeed, bezettingsgraad, previousSpeed,
 CASE WHEN (avgSpeed3Minutes BETWEEN 0 AND 40) THEN 1
 WHEN (avgSpeed3Minutes BETWEEN 41 AND 250) THEN 0
@@ -48,7 +48,7 @@ verkeersintensiteit_klasse3 as trafficIntensityClass3,
 verkeersintensiteit_klasse4 as trafficIntensityClass4,
 verkeersintensiteit_klasse5 as trafficIntensityClass5,
 verkeersintensiteit_klasse2 + verkeersintensiteit_klasse3 + verkeersintensiteit_klasse4 + verkeersintensiteit_klasse5 as bezettingsgraad FROM
-"anpr"."sls_data_pipelines_batch_destination_parquet"
+"traffic"."sls_data_pipelines_batch_destination_parquet"
 WHERE rekendata_bezettingsgraad > -1 AND defect=0)
 WHERE year(originalTimestamp)={year} AND month(originalTimestamp)={month} AND day(originalTimestamp) BETWEEN {start_day} AND {end_day}
 AND uniqueId IN (32, 37, 1840, 2125, 3388, 3391, 753, 1065, 3159, 2161, 216, 217, 1132)

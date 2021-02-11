@@ -12,24 +12,23 @@ plugins:
 custom:
   lumigo:
     token: ${ssm:/lumigo/token}
-  S3Prefix: 'destination-parquet/'
-  S3BatchResultsPrefix: 'transformed-parquet-athena/'
-  stage: "${opt:stage, self:provider.stage}"
-  AthenaWorkGroup: 'primary'
-  Database: 'anpr'
-  DataCatalog: 'AwsDataCatalog'
-  Table: 'sls_data_pipelines_batch_transformed_parquet_athena'
+  S3Prefix: "destination-parquet/"
+  S3BatchResultsPrefix: "transformed-parquet-athena/"
+  stage: ${opt:stage, self:provider.stage}
+  AthenaWorkGroup: "primary"
+  Database: "traffic"
+  DataCatalog: "AwsDataCatalog"
 
 provider:
   name: aws
   stage: dev
-  runtime: python3.7
+  runtime: python3.8
   region: eu-west-1
   profile: default
   httpApi:
     cors:
       allowedOrigins:
-        - '*'
+        - "*"
       allowedMethods:
         - GET
         - OPTIONS
@@ -43,7 +42,7 @@ provider:
         - "logs:CreateLogGroup"
         - "logs:CreateLogStream"
         - "logs:PutLogEvents"
-      Resource: '*'
+      Resource: "*"
     - Effect: "Allow"
       Action:
         - "states:ListStateMachines"
@@ -58,7 +57,7 @@ provider:
 
 functions:
   RunDataCrawler:
-#    handler: src/RunDataCrawler/handler.handle
+    #    handler: src/RunDataCrawler/handler.handle
     handler: /opt/python/lumigo_tracer._handler
     module: src/RunDataCrawler
     timeout: 30
@@ -75,7 +74,7 @@ functions:
         Resource: "*"
 
   GetCrawlerState:
-#    handler: src/GetCrawlerState/handler.handle
+    #    handler: src/GetCrawlerState/handler.handle
     handler: /opt/python/lumigo_tracer._handler
     module: src/GetCrawlerState
     timeout: 30
@@ -92,7 +91,7 @@ functions:
         Resource: "*"
 
   RunETLInsertAthena:
-#    handler: src/RunETLInsertAthena/handler.handle
+    #    handler: src/RunETLInsertAthena/handler.handle
     handler: /opt/python/lumigo_tracer._handler
     module: src/RunETLInsertAthena
     timeout: 30
@@ -103,7 +102,7 @@ functions:
       DB: ${self:custom.Database}
       CATALOG: ${self:custom.DataCatalog}
       WORKGROUP: ${self:custom.AthenaWorkGroup}
-      OUTPUT: 's3://sls-data-pipelines-dev-deliverybucket-1ct0hgst9xpby/batch-transformed/temp'
+      OUTPUT: "s3://sls-data-pipelines-dev-deliverybucket-1hs2feakqz1ca/batch-transformed/temp"
     iamRoleStatementsName: sls-batch-${opt:stage, self:provider.stage}-RunETLInsertAthena-lambdaRole
     iamRoleStatementsInherit: true
     iamRoleStatements:
@@ -130,10 +129,10 @@ functions:
               - - "arn:aws:s3:::"
                 - !ImportValue sls-data-pipelines-dev-TrafficEventsDeliveryBucketName
           - Fn::Join:
-            - ""
-            - - "arn:aws:s3:::"
-              - !ImportValue sls-data-pipelines-dev-TrafficEventsDeliveryBucketName
-              - "/*"
+              - ""
+              - - "arn:aws:s3:::"
+                - !ImportValue sls-data-pipelines-dev-TrafficEventsDeliveryBucketName
+                - "/*"
       - Effect: "Allow"
         Action:
           - glue:GetTable
@@ -142,39 +141,39 @@ functions:
           - glue:GetPartitions
           - glue:BatchCreatePartition
         Resource: "*"
-#      - Effect: "Allow"
-#        Action:
-#          - glue:GetTable
-#          -
-#        Resource:
-#          - Fn::Join:
-#              - ""
-#              - - "arn:aws:glue:#{AWS::Region}:#{AWS::AccountId}:table/"
-#                - ${self:custom.DataCatalog}
-#                - "/"
-#                - ${self:custom.Database}
-#                - "/"
-#                - ${self:custom.Table}
-#
-#      - Effect: "Allow"
-#        Action:
-#          - glue:UpdateTable
-#          - glue:GetPartition
-#          - glue:GetPartitions
-##        Resource:
-##          - Fn::Join:
-##              - ""
-##              - - "arn:aws:glue:#{AWS::Region}:#{AWS::AccountId}:database/"
-##                - ${self:custom.Database}
-##          - Fn::Join:
-##              - ""
-##              - - "arn:aws:glue:#{AWS::Region}:#{AWS::AccountId}:table/"
-##                - ${self:custom.Database}
-##                - "/"
-##                - ${self:custom.Table}
+  #      - Effect: "Allow"
+  #        Action:
+  #          - glue:GetTable
+  #          -
+  #        Resource:
+  #          - Fn::Join:
+  #              - ""
+  #              - - "arn:aws:glue:#{AWS::Region}:#{AWS::AccountId}:table/"
+  #                - ${self:custom.DataCatalog}
+  #                - "/"
+  #                - ${self:custom.Database}
+  #                - "/"
+  #                - ${self:custom.Table}
+  #
+  #      - Effect: "Allow"
+  #        Action:
+  #          - glue:UpdateTable
+  #          - glue:GetPartition
+  #          - glue:GetPartitions
+  ##        Resource:
+  ##          - Fn::Join:
+  ##              - ""
+  ##              - - "arn:aws:glue:#{AWS::Region}:#{AWS::AccountId}:database/"
+  ##                - ${self:custom.Database}
+  ##          - Fn::Join:
+  ##              - ""
+  ##              - - "arn:aws:glue:#{AWS::Region}:#{AWS::AccountId}:table/"
+  ##                - ${self:custom.Database}
+  ##                - "/"
+  ##                - ${self:custom.Table}
 
   GetAthenaState:
-#    handler: src/GetAthenaState/handler.handle
+    #    handler: src/GetAthenaState/handler.handle
     handler: /opt/python/lumigo_tracer._handler
     module: src/GetAthenaState
     timeout: 30
@@ -197,7 +196,6 @@ resources:
 
 stepFunctions:
   stateMachines: ${file(resources/sm.yml)}
-
 #resources:
 #  - Outputs:
 #      TrafficEventsDeliveryBucket:

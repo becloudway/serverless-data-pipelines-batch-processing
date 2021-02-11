@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # set this to you personal mfa url
-arn=arn:aws:iam::343030928329:mfa/sam
+arn=arn:aws:iam::account:mfa/sam
 
 # gets secure session information from aws
 response=$(aws sts get-session-token --serial-number $arn --token-code $2)
